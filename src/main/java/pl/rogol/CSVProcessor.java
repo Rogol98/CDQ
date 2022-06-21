@@ -11,7 +11,13 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 public class CSVProcessor {
+
+    private static final Logger logger = LoggerFactory.getLogger(CSVProcessor.class);
 
     public static Map<String, Integer> getBreweriesInStates(String filePath) throws IOException {
 
@@ -26,11 +32,7 @@ public class CSVProcessor {
                     .build();
 
             for (Brewery brewery : csvToBean) {
-                System.out.println("ID: " + brewery.getId());
-                System.out.println("Name: " + brewery.getName());
-                System.out.println("longitude: " + brewery.getLongitude());
-                System.out.println("postalcode: " + brewery.getPostalCode());
-
+                breweriesInStates.merge(brewery.getProvince(), 1, Integer::sum);
             }
 
         }
