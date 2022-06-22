@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-import static pl.rogol.CSVProcessor.getNoOfTacosInDelaware;
+import static pl.rogol.CSVProcessor.*;
 
 public class App {
 
@@ -24,10 +24,14 @@ public class App {
 //        logger.info("number of websites: " + (getWebsites(AppPaths.BREWERIES_FILE_PATH).size()));
 
         // d)
-        logger.info("number of tacos in Delaware: " + getNoOfTacosInDelaware(AppPaths.BREWERIES_FILE_PATH));
-        // e)
+//        logger.info("number of tacos in Delaware: " + getNoOfTacosInDelaware(AppPaths.BREWERIES_FILE_PATH));
 
-        // 3
+        // e)
+//        getWineBreweries(AppPaths.BREWERIES_FILE_PATH).forEach((key, value) -> logger.info("{} : {}%", key, value));
+
+        //3
+        System.out.println(findDuplicatedRecords(AppPaths.BREWERIES_FILE_PATH).size());
+
 
     }
 

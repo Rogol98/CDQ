@@ -13,21 +13,18 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CSVUtils {
 
-    public static final String[] states = {"Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
+    protected static final String[] states = {"Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
             "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana",
             "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska",
             "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio",
             "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas",
             "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"};
 
-    public static final String[] stateCodes = {"AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
+    protected static final String[] stateCodes = {"AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
             "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT",
             "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN",
             "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"};
@@ -72,6 +69,20 @@ public class CSVUtils {
         return null;
     }
 
+    public static Map<String, Integer> assignBreweryToState(Map<String, Integer> breweriesMap, Brewery brewery) throws IOException {
+        if (Arrays.asList(CSVUtils.states).contains(brewery.getProvince())) {
+            breweriesMap.merge(brewery.getProvince(), 1, Integer::sum);
+        } else if (Arrays.asList(CSVUtils.stateCodes).contains(brewery.getProvince())) {
+            breweriesMap.merge(CSVUtils.translateCodeToState(brewery.getProvince()), 1, Integer::sum);
+        } else {
+            String stateFromCity = CSVUtils.getStateFromCity(brewery.getCity());
+            if (stateFromCity != null) {
+                breweriesMap.merge(stateFromCity, 1, Integer::sum);
+            }
+        }
+        return breweriesMap;
+    }
+
     public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
         List<Map.Entry<K, V>> list = new ArrayList<>(map.entrySet());
         list.sort(Map.Entry.comparingByValue());
@@ -84,7 +95,6 @@ public class CSVUtils {
     }
 
     public static int countLines(String fileName) {
-
         int lines = 0;
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             while (reader.readLine() != null) lines++;
