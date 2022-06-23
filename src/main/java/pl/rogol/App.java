@@ -3,10 +3,13 @@ package pl.rogol;
 import com.opencsv.exceptions.CsvException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.rogol.CSV.CSVUtils;
+import pl.rogol.model.Brewery;
 
 import java.io.IOException;
+import java.util.List;
 
-import static pl.rogol.CSVProcessor.*;
+import static pl.rogol.CSV.CSVProcessor.*;
 
 public class App {
 
@@ -30,8 +33,9 @@ public class App {
 //        getWineBreweries(AppPaths.BREWERIES_FILE_PATH).forEach((key, value) -> logger.info("{} : {}%", key, value));
 
         //3
-        System.out.println(findDuplicatedRecords(AppPaths.BREWERIES_FILE_PATH).size());
-
+//        List<Brewery> duplicatedRecords = findDuplicatedRecords(AppPaths.BREWERIES_FILE_PATH);
+//        duplicatedRecords.forEach(s -> logger.info(s.toString()));
+//        logger.info("Number of breweries listed more than once: " + CSVUtils.getNoOfUniqueRecordsInList(duplicatedRecords));
 
     }
 

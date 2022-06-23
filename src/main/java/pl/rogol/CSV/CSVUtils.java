@@ -1,9 +1,10 @@
-package pl.rogol;
+package pl.rogol.CSV;
 
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import org.apache.commons.lang3.ArrayUtils;
+import pl.rogol.AppPaths;
 import pl.rogol.model.Brewery;
 import pl.rogol.model.USACity;
 
@@ -35,6 +36,11 @@ public class CSVUtils {
     public static String translateCodeToState(String stateCode) {
         int correspondingIndex = ArrayUtils.indexOf(stateCodes, stateCode);
         return states[correspondingIndex];
+    }
+
+    public static int getNoOfUniqueRecordsInList(List<Brewery> recordsList) {
+        Set<Brewery> uniqueRecords = new HashSet<>(recordsList);
+        return uniqueRecords.size();
     }
 
     public static ColumnPositionMappingStrategy<Brewery> getBreweryStrategy() {

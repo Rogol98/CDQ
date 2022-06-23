@@ -1,9 +1,10 @@
-package pl.rogol;
+package pl.rogol.CSV;
 
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.rogol.AppPaths;
 import pl.rogol.model.Brewery;
 
 import java.io.IOException;
@@ -27,9 +28,8 @@ public class CSVProcessor {
         }
     }
 
-
     public static Map<String, Integer> getBreweriesInStates(String filePath) throws IOException {
-        Map<String, Integer> breweriesInStates = new TreeMap<>();
+        Map<String, Integer> breweriesInStates = new HashMap<>();
         int row = 1;
 
         try (Reader reader = Files.newBufferedReader(Paths.get(filePath))) {
@@ -49,7 +49,7 @@ public class CSVProcessor {
     }
 
     public static Map<String, Integer> getBreweriesInCities(String filePath) throws IOException {
-        Map<String, Integer> breweriesInCities = new HashMap<>();
+        Map<String, Integer> breweriesInCities = new TreeMap<>();
         int row = 1;
 
         try (Reader reader = Files.newBufferedReader(Paths.get(filePath))) {
@@ -81,7 +81,9 @@ public class CSVProcessor {
 
             for (Brewery brewery : csvToBean) {
                 logProgress(row);
-                websites.add(brewery.getWebsites());
+                if (!"".equals(brewery.getWebsites())) {
+                    websites.add(brewery.getWebsites());
+                }
                 row++;
             }
         }
@@ -101,7 +103,7 @@ public class CSVProcessor {
 
             for (Brewery brewery : csvToBean) {
                 logProgress(row);
-                if ("Delaware".equalsIgnoreCase(brewery.getProvince()) || "DE".equalsIgnoreCase(brewery.getProvince())
+                if (("Delaware".equalsIgnoreCase(brewery.getProvince()) || "DE".equalsIgnoreCase(brewery.getProvince()))
                         && brewery.getMenus().toLowerCase().contains("taco")) {
                     tacos++;
                 }
@@ -134,7 +136,6 @@ public class CSVProcessor {
             }
         }
 
-
         for (Map.Entry<String, Integer> entry : wineBreweriesInStates.entrySet()) {
             double value = (double) entry.getValue() / breweriesInStates.get(entry.getKey()) * 100;
             value = BigDecimal.valueOf(value)
@@ -142,17 +143,13 @@ public class CSVProcessor {
                     .doubleValue();
             wineBreweriesInStatesPercentage.put(entry.getKey(), value);
         }
-
         return wineBreweriesInStatesPercentage;
     }
 
-    public static Set<Brewery> findDuplicatedRecords(String filePath) throws IOException {
+    public static List<Brewery> findDuplicatedRecords(String filePath) throws IOException {
         int row = 1;
-
-        Set<Brewery> duplicatedBreweries = new HashSet<>();
-        Set<Double> longitudes = new HashSet<>();
-        Set<Double> latitudes = new HashSet<>();
-        Set<String> names = new HashSet<>();
+        List<Brewery> duplicatedBreweries = new ArrayList<>();
+        Set<Brewery> uniqueRecords = new HashSet<>();
 
         try (Reader reader = Files.newBufferedReader(Paths.get(filePath))) {
             CsvToBean<Brewery> csvToBean = new CsvToBeanBuilder<Brewery>(reader)
@@ -163,14 +160,7 @@ public class CSVProcessor {
 
             for (Brewery brewery : csvToBean) {
                 logProgress(row);
-
-                if(brewery.getLongitude() != 0.0 && !latitudes.add(brewery.getLongitude())){
-                    System.out.println(brewery.getLongitude());
-                }
-
-                if (brewery.getLongitude() != 0.0 && !latitudes.add(brewery.getLongitude()) &&
-                        brewery.getLatitude() != 0.0 && !longitudes.add(brewery.getLatitude()) &&
-                        !names.add(brewery.getName())) {
+                if (!uniqueRecords.add(brewery)) {
                     duplicatedBreweries.add(brewery);
                 }
                 row++;
